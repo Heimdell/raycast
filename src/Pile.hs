@@ -1,4 +1,6 @@
 
+{-# language Strict #-}
+
 module Pile where
 
 import Data.Ord (comparing)
