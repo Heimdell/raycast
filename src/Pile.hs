@@ -4,7 +4,7 @@ module Pile where
 import Data.Ord (comparing)
 import Data.List (maximumBy, intercalate)
 
-import Data.Vector qualified as V
+import Data.Vector.Primitive qualified as V
 
 import Point3D
 
@@ -15,16 +15,17 @@ newtype Matrix = Matrix { mRaw :: V.Vector Float }
   deriving stock (Eq, Ord)
 
 instance Show Matrix where
-  show (Matrix v) =
+  show (Matrix v'') =
     let
-      v'      = V.map approx v
+      v       = V.toList v''
+      v'      = fmap approx v
       strs    = fmap show v'
       longest = maximumBy (comparing length) strs
       strs'   = fmap (lpad $ length longest) strs
     in
       unlines $ flip map [0.. 3] \i ->
         ("( " <>) . (<> ")") $ intercalate "| " $ flip map [0.. 3] \j ->
-          strs' V.! (i * 4 + j) <> " "
+          strs' !! (i * 4 + j) <> " "
 
     where
       lpad n s = replicate (max 0 (n - length s)) ' ' <> s
@@ -123,7 +124,7 @@ float = fromIntegral
 int :: Float -> Int
 int = round
 
-vec :: [a] -> V.Vector a
+vec :: V.Prim a => [a] -> V.Vector a
 vec = V.fromList
 
 row :: Int -> Matrix -> V.Vector Float
@@ -136,14 +137,14 @@ transpose :: Matrix -> Matrix
 transpose m = make \i j -> m ! (j, i)
 
 dot :: V.Vector Float -> V.Vector Float -> Float
-dot = (sum .) . V.zipWith (*)
+dot = (V.sum .) . V.zipWith (*)
 
 apply :: Matrix -> V.Vector Float -> V.Vector Float
 apply m v =
   let
     m' = transpose m
   in
-    flip fmap (vec [0.. 3]) \i -> dot v (row i m')
+    flip V.map (vec [0.. 3]) \i -> dot v (row i m')
 
 mult :: Matrix -> Matrix -> Matrix
 mult a b =
