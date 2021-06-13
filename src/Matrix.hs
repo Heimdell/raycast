@@ -1,7 +1,7 @@
 
 {-# language Strict #-}
 
-module Pile where
+module Matrix where
 
 import Data.Ord (comparing)
 import Data.List (maximumBy, intercalate)
@@ -26,8 +26,11 @@ instance Show Matrix where
       strs'   = fmap (lpad $ length longest) strs
     in
       unlines $ flip map [0.. 3] \i ->
-        ("( " <>) . (<> ")") $ intercalate "| " $ flip map [0.. 3] \j ->
-          strs' !! (i * 4 + j) <> " "
+        ("( " <>)
+          $ (<> ")")
+          $ intercalate "| "
+          $ flip map [0.. 3] \j ->
+              strs' !! (i * 4 + j) <> " "
 
     where
       lpad n s = replicate (max 0 (n - length s)) ' ' <> s
@@ -43,7 +46,7 @@ instance Num Matrix where
   fromInteger = scale' . fromIntegral
 
 instance Fractional Matrix where
-  recip = inverse
+  recip        = inverse
   fromRational = scale' . fromRational
 
 make :: (Int -> Int -> Float) -> Matrix

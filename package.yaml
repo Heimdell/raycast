@@ -9,11 +9,17 @@ dependencies:
 - gloss
 - exceptions
 - vector
+- lens
+- data-default
+- containers
 
 default-extensions:
 - BlockArguments
 - DerivingStrategies
 - ImportQualifiedPost
+- RankNTypes
+- DuplicateRecordFields
+- TemplateHaskell
 
 ghc-options: -O3 -fexpose-all-unfoldings
 
